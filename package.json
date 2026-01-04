@@ -1,0 +1,12 @@
+{
+  "name": "aiscalers-php",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "php -S localhost:8000 -t public"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
