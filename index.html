@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AiScalers | Club Privado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            neon: '#00FF94',
+                            dark: '#0B0F19',
+                            surface: '#121622',
+                            accent: '#2563EB'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background: #0B0F19; color: #E2E8F0; }
+        .glass { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 20px 80px rgba(0,0,0,0.35); }
+        .glow { box-shadow: 0 0 30px rgba(0, 255, 148, 0.25); }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+            <div>
+                <p class="text-sm text-gray-400 uppercase tracking-[0.3em]">Club Privado</p>
+                <h1 class="text-3xl font-black text-white">AiScalers.co</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-brand-neon/10 text-brand-neon border border-brand-neon/40">Membresía</span>
+                <button id="loginButton" class="px-5 py-2 rounded-lg bg-brand-neon text-black font-bold hover:translate-y-[-1px] transition">Ingresar</button>
+            </div>
+        </header>
+
+        <!-- Landing pública -->
+        <section id="landing" class="grid md:grid-cols-2 gap-8 mb-10">
+            <div class="space-y-4">
+                <h2 class="text-4xl font-black text-white leading-tight">Automatiza tu negocio en tres pasos claros.</h2>
+                <p class="text-gray-400">Accede a una bóveda de sistemas listos, un consultor IA con contexto y bibliotecas ejecutivas. Flujo de copiar/pegar optimizado para dueños de negocio.</p>
+                <ul class="space-y-2 text-gray-300 text-sm">
+                    <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-neon"></span>Área pública para descubrir valor y CTA de registro.</li>
+                    <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-neon"></span>Acceso a dashboard solo para miembros activos.</li>
+                    <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-neon"></span>Onboarding con primeros 3 pasos guiados.</li>
+                </ul>
+                <div class="flex gap-3">
+                    <button class="px-5 py-3 bg-brand-neon text-black font-bold rounded-lg glow">Solicitar acceso</button>
+                    <button class="px-5 py-3 border border-gray-700 rounded-lg text-gray-200">Ver términos</button>
+                </div>
+            </div>
+            <div class="glass rounded-2xl p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm text-gray-400">Flujo seguro</p>
+                    <span class="text-brand-neon text-xs font-semibold">SSE Ready</span>
+                </div>
+                <div class="bg-brand-surface rounded-xl p-4 text-sm text-gray-200 leading-relaxed">
+                    <p class="text-gray-400 mb-2">Simulación de acceso</p>
+                    <label class="block text-xs text-gray-400 mb-1">Correo</label>
+                    <input type="email" placeholder="ceo@empresa.com" class="w-full mb-3 px-3 py-2 rounded bg-black/40 border border-gray-800 focus:outline-none">
+                    <label class="block text-xs text-gray-400 mb-1">Contraseña</label>
+                    <input type="password" placeholder="••••••••" class="w-full mb-3 px-3 py-2 rounded bg-black/40 border border-gray-800 focus:outline-none">
+                    <button class="w-full mt-2 px-4 py-3 rounded-lg bg-brand-neon text-black font-bold">Simular inicio</button>
+                    <p class="text-[11px] text-gray-500 mt-3">La membresía se verifica antes de mostrar el dashboard.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard privado -->
+        <section id="dashboard" class="hidden space-y-8">
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="glass rounded-xl p-4">
+                    <p class="text-xs text-gray-400">Estado de membresía</p>
+                    <p class="text-lg font-bold text-white" id="membershipStatus">Activa</p>
+                    <p class="text-xs text-gray-500">Próxima renovación: <span id="renewal">30/06/2024</span></p>
+                    <div class="mt-3 flex gap-2">
+                        <button class="text-xs px-3 py-2 rounded bg-brand-neon text-black font-bold">Actualizar pago</button>
+                        <button class="text-xs px-3 py-2 rounded border border-gray-700 text-gray-300">Cancelar</button>
+                    </div>
+                </div>
+                <div class="glass rounded-xl p-4" id="onboardingCard">
+                    <p class="text-xs text-gray-400">Onboarding</p>
+                    <p class="text-lg font-bold text-white">3 pasos iniciales</p>
+                    <div id="onboardingSteps" class="mt-3 space-y-2 text-sm text-gray-300"></div>
+                    <button id="completeOnboarding" class="mt-3 text-xs px-3 py-2 rounded bg-brand-neon text-black font-bold">Marcar como completado</button>
+                </div>
+                <div class="glass rounded-xl p-4">
+                    <p class="text-xs text-gray-400">Accesos rápidos</p>
+                    <div class="flex flex-wrap gap-2 mt-3">
+                        <a href="#vault" class="text-xs px-3 py-2 rounded bg-brand-neon text-black font-bold">Bóveda</a>
+                        <a href="#chat" class="text-xs px-3 py-2 rounded border border-gray-700 text-gray-300">Consultor IA</a>
+                        <a href="#prompt" class="text-xs px-3 py-2 rounded border border-gray-700 text-gray-300">Prompt-Teca</a>
+                        <a href="#library" class="text-xs px-3 py-2 rounded border border-gray-700 text-gray-300">Biblioteca</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bóveda de Sistemas -->
+            <div id="vault" class="glass rounded-2xl p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase">Bóveda de Sistemas</p>
+                        <h3 class="text-xl font-bold text-white">Automatizaciones listas</h3>
+                    </div>
+                    <input id="vaultSearch" type="search" placeholder="Filtrar por categoría" class="px-3 py-2 rounded bg-black/50 border border-gray-800 text-sm" />
+                </div>
+                <div id="vaultGrid" class="grid md:grid-cols-3 gap-4"></div>
+            </div>
+
+            <!-- Consultor IA -->
+            <div id="chat" class="glass rounded-2xl p-6 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase">Consultor IA</p>
+                        <h3 class="text-xl font-bold text-white">Contexto pre-cargado</h3>
+                    </div>
+                    <button id="resetChat" class="text-xs px-3 py-2 rounded border border-gray-700 text-gray-300">Nueva sesión</button>
+                </div>
+                <div id="chatWindow" class="h-56 overflow-y-auto rounded-lg bg-black/30 border border-gray-800 p-3 space-y-3 text-sm"></div>
+                <div class="flex gap-2">
+                    <input id="chatInput" type="text" placeholder="Escribe tu mensaje" class="flex-1 px-3 py-2 rounded bg-black/50 border border-gray-800 text-sm" />
+                    <button id="sendChat" class="px-4 py-2 rounded bg-brand-neon text-black font-bold text-sm">Enviar</button>
+                </div>
+            </div>
+
+            <!-- Prompt-Teca Ejecutiva -->
+            <div id="prompt" class="glass rounded-2xl p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase">Prompt-Teca Ejecutiva</p>
+                        <h3 class="text-xl font-bold text-white">Plantillas con variables</h3>
+                    </div>
+                    <button id="toggleFavorites" class="text-xs px-3 py-2 rounded border border-gray-700 text-gray-300">Ver favoritas</button>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4" id="promptList"></div>
+                <div class="glass rounded-xl p-4">
+                    <p class="text-sm text-gray-300 mb-2">Resultado</p>
+                    <textarea id="promptResult" class="w-full h-24 bg-black/40 border border-gray-800 rounded p-3 text-sm" readonly></textarea>
+                    <button id="copyPrompt" class="mt-3 px-4 py-2 rounded bg-brand-neon text-black font-bold text-sm">Copiar texto</button>
+                </div>
+            </div>
+
+            <!-- Biblioteca Inteligente -->
+            <div id="library" class="glass rounded-2xl p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase">Biblioteca Inteligente</p>
+                        <h3 class="text-xl font-bold text-white">Libros + Podcasts</h3>
+                    </div>
+                    <input id="librarySearch" type="search" placeholder="Filtrar por tema" class="px-3 py-2 rounded bg-black/50 border border-gray-800 text-sm" />
+                </div>
+                <div id="libraryGrid" class="grid md:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const onboardingSteps = [
+            { id: 1, label: 'Configura tu perfil ejecutivo' },
+            { id: 2, label: 'Copia tu primer blueprint' },
+            { id: 3, label: 'Envía un mensaje al consultor IA' }
+        ];
+
+        const vaultItems = [
+            { title: 'Sistema de seguimiento de leads', category: 'Ventas', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ', blueprint: 'LEAD_PIPELINE_SETUP_001', instructions: 'Conecta tu CRM y define etapas.' },
+            { title: 'Nómina automatizada', category: 'Operaciones', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ', blueprint: 'PAYROLL_AUTOMATION_V2', instructions: 'Sincroniza bancos y establece aprobaciones.' },
+            { title: 'Retención de clientes', category: 'Servicio', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ', blueprint: 'RETENTION_FLOW_ALPHA', instructions: 'Activa alertas y campañas multicanal.' }
+        ];
+
+        const promptTemplates = [
+            { id: 1, title: 'Pitch comercial', category: 'Ventas', favorite: true, template: 'Somos {empresa}, ayudamos a {audiencia} a lograr {beneficio} en {tiempo}.' },
+            { id: 2, title: 'Seguimiento post-demo', category: 'Servicio', favorite: false, template: 'Hola {nombre}, gracias por tu tiempo. Próximos pasos: {pasos}.' },
+            { id: 3, title: 'Resumen ejecutivo', category: 'Dirección', favorite: false, template: 'En {periodo}, logramos {logros}. Necesitamos decidir {decision}.' }
+        ];
+
+        const libraryItems = [
+            { title: 'Playbook Operativo', author: 'Equipo AiScalers', theme: 'Operaciones', cover: 'https://placehold.co/400x250', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', doc: '#', description: 'Resumen ejecutivo en audio antes de descargar.', duration: '03:10' },
+            { title: 'Manual de Ventas AI', author: 'Equipo AiScalers', theme: 'Ventas', cover: 'https://placehold.co/400x250', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', doc: '#', description: 'Decide si descargas tras escuchar.', duration: '04:02' },
+            { title: 'Guía de Productividad', author: 'Equipo AiScalers', theme: 'Productividad', cover: 'https://placehold.co/400x250', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', doc: '#', description: 'Reproduce sin salir de la página.', duration: '02:45' }
+        ];
+
+        const chatContext = 'Metodología AiScalers: prioriza copiar blueprints probados, medir impacto y iterar con IA.';
+        const chatWindow = document.getElementById('chatWindow');
+        const chatInput = document.getElementById('chatInput');
+
+        function toggleDashboard(show) {
+            document.getElementById('landing').classList.toggle('hidden', show);
+            document.getElementById('dashboard').classList.toggle('hidden', !show);
+        }
+
+        function renderOnboarding() {
+            const container = document.getElementById('onboardingSteps');
+            container.innerHTML = '';
+            const completed = JSON.parse(sessionStorage.getItem('onboarding') || '[]');
+            onboardingSteps.forEach(step => {
+                const done = completed.includes(step.id);
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2';
+                row.innerHTML = `<span class="w-3 h-3 rounded-full ${done ? 'bg-brand-neon' : 'border border-gray-700'}"></span><p class="text-sm ${done ? 'text-gray-300' : 'text-gray-500'}">${step.label}</p>`;
+                container.appendChild(row);
+            });
+        }
+
+        function handleOnboardingComplete() {
+            sessionStorage.setItem('onboarding', JSON.stringify(onboardingSteps.map(s => s.id)));
+            renderOnboarding();
+            document.getElementById('onboardingCard').classList.add('border', 'border-brand-neon/60');
+        }
+
+        function renderVault(filter = '') {
+            const grid = document.getElementById('vaultGrid');
+            grid.innerHTML = '';
+            vaultItems
+                .filter(item => item.category.toLowerCase().includes(filter.toLowerCase()))
+                .forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'rounded-xl bg-black/30 border border-gray-800 p-4 flex flex-col gap-3';
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-xs text-gray-400">${item.category}</p>
+                                <h4 class="text-lg font-bold text-white">${item.title}</h4>
+                            </div>
+                            <span class="px-2 py-1 text-[10px] rounded bg-brand-neon/10 text-brand-neon">Video</span>
+                        </div>
+                        <div class="rounded-lg overflow-hidden aspect-video bg-black/40 border border-gray-800">
+                            <iframe class="w-full h-full" src="${item.video}" allowfullscreen></iframe>
+                        </div>
+                        <p class="text-xs text-gray-400">${item.instructions}</p>
+                        <button data-blueprint="${item.blueprint}" class="copy-blueprint w-full px-4 py-2 rounded bg-brand-neon text-black font-bold text-sm">Copiar Blueprint</button>
+                    `;
+                    grid.appendChild(card);
+                });
+        }
+
+        function copyBlueprint(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Blueprint copiado al portapapeles');
+            }).catch(() => alert('No se pudo copiar. Intenta nuevamente.'));
+        }
+
+        function initChat() {
+            const history = JSON.parse(sessionStorage.getItem('chatHistory') || '[]');
+            if (!history.length) {
+                history.push({ role: 'system', content: chatContext });
+                sessionStorage.setItem('chatHistory', JSON.stringify(history));
+            }
+            renderChat();
+        }
+
+        function renderChat() {
+            chatWindow.innerHTML = '';
+            const history = JSON.parse(sessionStorage.getItem('chatHistory') || '[]');
+            history.forEach(message => {
+                const bubble = document.createElement('div');
+                bubble.className = `p-3 rounded-lg text-sm ${message.role === 'user' ? 'bg-brand-neon/20 text-white ml-auto' : 'bg-black/40 text-gray-200 mr-auto'} max-w-[80%]`;
+                bubble.textContent = message.content;
+                chatWindow.appendChild(bubble);
+            });
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            const history = JSON.parse(sessionStorage.getItem('chatHistory') || '[]');
+            history.push({ role: 'user', content: text });
+            history.push({ role: 'assistant', content: 'Respuesta generada con contexto del club.' });
+            sessionStorage.setItem('chatHistory', JSON.stringify(history));
+            chatInput.value = '';
+            renderChat();
+        }
+
+        function resetChat() {
+            sessionStorage.removeItem('chatHistory');
+            initChat();
+        }
+
+        function renderPrompts(showFavorites = false) {
+            const list = document.getElementById('promptList');
+            list.innerHTML = '';
+            promptTemplates
+                .filter(p => !showFavorites || p.favorite)
+                .forEach(template => {
+                    const card = document.createElement('div');
+                    card.className = 'rounded-xl bg-black/30 border border-gray-800 p-4 flex flex-col gap-3';
+                    card.innerHTML = `
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <p class="text-xs text-gray-400">${template.category}</p>
+                                <h4 class="text-lg font-bold text-white">${template.title}</h4>
+                            </div>
+                            <button class="text-xs px-2 py-1 rounded ${template.favorite ? 'bg-brand-neon/20 text-brand-neon' : 'border border-gray-700 text-gray-400'}" data-fav="${template.id}">${template.favorite ? '★ Favorito' : '☆ Favorito'}</button>
+                        </div>
+                        <div class="space-y-2 text-xs text-gray-300">
+                            <label class="block">Variables</label>
+                            <input data-field="empresa" placeholder="Empresa" class="w-full px-3 py-2 rounded bg-black/40 border border-gray-800 text-sm" />
+                            <input data-field="audiencia" placeholder="Audiencia" class="w-full px-3 py-2 rounded bg-black/40 border border-gray-800 text-sm" />
+                            <input data-field="beneficio" placeholder="Beneficio" class="w-full px-3 py-2 rounded bg-black/40 border border-gray-800 text-sm" />
+                            <input data-field="tiempo" placeholder="Tiempo" class="w-full px-3 py-2 rounded bg-black/40 border border-gray-800 text-sm" />
+                            <input data-field="nombre" placeholder="Nombre" class="w-full px-3 py-2 rounded bg-black/40 border border-gray-800 text-sm" />
+                            <input data-field="pasos" placeholder="Pasos" class="w-full px-3 py-2 rounded bg-black/40 border border-gray-800 text-sm" />
+                            <input data-field="periodo" placeholder="Periodo" class="w-full px-3 py-2 rounded bg-black/40 border border-gray-800 text-sm" />
+                            <input data-field="logros" placeholder="Logros" class="w-full px-3 py-2 rounded bg-black/40 border border-gray-800 text-sm" />
+                            <input data-field="decision" placeholder="Decisión" class="w-full px-3 py-2 rounded bg-black/40 border border-gray-800 text-sm" />
+                        </div>
+                        <button data-generate="${template.id}" class="w-full px-4 py-2 rounded bg-brand-neon text-black font-bold text-sm">Generar texto</button>
+                    `;
+                    list.appendChild(card);
+                });
+        }
+
+        function generatePrompt(id, form) {
+            const template = promptTemplates.find(p => p.id === id);
+            if (!template) return;
+            let text = template.template;
+            form.querySelectorAll('input[data-field]').forEach(input => {
+                const value = input.value || `{${input.dataset.field}}`;
+                text = text.replace(`{${input.dataset.field}}`, value);
+            });
+            document.getElementById('promptResult').value = text;
+        }
+
+        function copyPromptResult() {
+            const text = document.getElementById('promptResult').value;
+            if (!text) return alert('No hay texto para copiar.');
+            navigator.clipboard.writeText(text).then(() => alert('Texto copiado.')).catch(() => alert('No se pudo copiar.'));
+        }
+
+        function renderLibrary(filter = '') {
+            const grid = document.getElementById('libraryGrid');
+            grid.innerHTML = '';
+            libraryItems
+                .filter(item => item.theme.toLowerCase().includes(filter.toLowerCase()))
+                .forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'rounded-xl bg-black/30 border border-gray-800 p-4 flex flex-col gap-3';
+                    card.innerHTML = `
+                        <img src="${item.cover}" alt="${item.title}" class="rounded-lg border border-gray-800">
+                        <div>
+                            <p class="text-xs text-gray-400">${item.theme}</p>
+                            <h4 class="text-lg font-bold text-white">${item.title}</h4>
+                            <p class="text-xs text-gray-500">${item.author}</p>
+                            <p class="text-sm text-gray-300 mt-2">${item.description}</p>
+                        </div>
+                        <audio controls class="w-full" src="${item.audio}"></audio>
+                        <div class="flex items-center justify-between text-xs text-gray-400">
+                            <span>Resumen ${item.duration}</span>
+                            <a href="${item.doc}" class="text-brand-neon font-semibold">Descargar</a>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+        }
+
+        document.getElementById('loginButton').addEventListener('click', () => {
+            toggleDashboard(true);
+            renderOnboarding();
+            initChat();
+            renderVault();
+            renderPrompts();
+            renderLibrary();
+        });
+
+        document.getElementById('completeOnboarding').addEventListener('click', handleOnboardingComplete);
+
+        document.getElementById('vaultSearch').addEventListener('input', (e) => {
+            renderVault(e.target.value);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.copy-blueprint')) {
+                copyBlueprint(e.target.dataset.blueprint);
+            }
+            if (e.target.dataset.generate) {
+                const id = Number(e.target.dataset.generate);
+                const form = e.target.closest('div');
+                generatePrompt(id, form);
+            }
+            if (e.target.dataset.fav) {
+                const id = Number(e.target.dataset.fav);
+                const tpl = promptTemplates.find(p => p.id === id);
+                tpl.favorite = !tpl.favorite;
+                renderPrompts(document.getElementById('toggleFavorites').dataset.active === 'true');
+            }
+        });
+
+        document.getElementById('toggleFavorites').addEventListener('click', (e) => {
+            const active = e.target.dataset.active === 'true';
+            e.target.dataset.active = (!active).toString();
+            e.target.textContent = active ? 'Ver favoritas' : 'Ver todas';
+            renderPrompts(!active);
+        });
+
+        document.getElementById('copyPrompt').addEventListener('click', copyPromptResult);
+        document.getElementById('librarySearch').addEventListener('input', (e) => renderLibrary(e.target.value));
+        document.getElementById('sendChat').addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+        document.getElementById('resetChat').addEventListener('click', resetChat);
+
+        // Mostrar landing por defecto, dashboard tras click.
+        toggleDashboard(false);
+    </script>
+</body>
+</html>
